@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink:        #12161B;
+      --surface:    #1B2128;
+      --surface-2:  #232B34;
+      --line:       #2E3742;
+      --text:       #E8EDF2;
+      --text-dim:   #8A97A6;
+      --text-faint: #5C6875;
+      --in:         #3DDC84;
+      --out:        #495562;
+
+      --maddie: #039BE5;
+      --emily:  #F09300;
+      --cooper: #0B8043;
+
+      --us:     #7C6BFF;
+      --open:   #FFD43B;
+      --alert:  #FF6B6B;
+
+      --pad: 16px;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--ink);
+      color: var(--text);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      padding-bottom: env(safe-area-inset-bottom);
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    /* ---------- header ---------- */
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(18, 22, 27, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+      padding: calc(env(safe-area-inset-top) + 14px) var(--pad) 0;
+    }
+
+    .masthead {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .crest { display: flex; align-items: center; gap: 10px; min-width: 0; }
+
+    .crest img {
+      width: 34px; height: 34px; flex: 0 0 auto;
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,.45));
+    }
+
+    h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 27px; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      margin: 0; line-height: 1;
+    }
+
+    .count {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-faint); white-space: nowrap;
+    }
+
+    /* ---------- mode switch ---------- */
+
+    .modes {
+      display: flex; gap: 3px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 3px;
+      margin-top: 12px;
+    }
+    .modes button {
+      flex: 1; padding: 9px 4px; border: 0; border-radius: 6px;
+      background: none; color: var(--text-dim); cursor: pointer;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      transition: background .14s, color .14s;
+    }
+    .modes button[aria-pressed="true"] {
+      background: var(--surface-2); color: var(--text);
+      box-shadow: 0 1px 3px rgba(0,0,0,.35);
+    }
+
+    .filters {
+      display: flex; gap: 6px; overflow-x: auto;
+      scrollbar-width: none; padding: 12px 0;
+      margin: 0 calc(var(--pad) * -1);
+      padding-left: var(--pad); padding-right: var(--pad);
+    }
+    .filters::-webkit-scrollbar { display: none; }
+    .filters + .filters { padding-top: 0; padding-bottom: 12px; }
+    .filters.hidden { display: none; }
+
+    .chip {
+      flex: 0 0 auto;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px; font-weight: 600;
+      letter-spacing: 0.07em; text-transform: uppercase;
+      color: var(--text-dim); background: var(--surface);
+      border: 1px solid var(--line); border-radius: 999px;
+      padding: 7px 14px; cursor: pointer;
+      transition: color .12s, background .12s, border-color .12s;
+    }
+    .chip:focus-visible { outline: 2px solid var(--in); outline-offset: 2px; }
+    .chip[aria-pressed="true"] {
+      color: var(--ink); background: var(--text); border-color: var(--text);
+    }
+    .chip[data-kid="Maddie"][aria-pressed="true"] { background: var(--maddie); border-color: var(--maddie); color: #04121A; }
+    .chip[data-kid="Emily"][aria-pressed="true"]  { background: var(--emily);  border-color: var(--emily);  color: #1A1000; }
+    .chip[data-kid="Cooper"][aria-pressed="true"] { background: var(--cooper); border-color: var(--cooper); color: #F2FFF6; }
+
+    /* ---------- banners ---------- */
+
+    .banner {
+      margin: 12px var(--pad) 0;
+      border: 1px solid rgba(255,107,107,.42);
+      background: rgba(255,107,107,.09);
+      border-radius: 8px; padding: 11px 13px;
+    }
+    .banner b {
+      display: block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--alert); margin-bottom: 4px;
+    }
+    .banner p { margin: 0; font-size: 13px; line-height: 1.45; color: #FFC9C9; }
+
+    .hint {
+      margin: 12px var(--pad) 0;
+      border: 1px dashed var(--line); border-radius: 8px;
+      padding: 12px 13px; font-size: 13px; color: var(--text-dim); line-height: 1.5;
+    }
+
+    /* ---------- list ---------- */
+
+    main { padding: 4px var(--pad) 32px; }
+
+    .daybar { display: flex; align-items: center; gap: 10px; margin: 22px 0 8px; }
+    .daybar:first-child { margin-top: 12px; }
+    .daybar span {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-dim); white-space: nowrap;
+    }
+    .daybar i { flex: 1; height: 1px; background: var(--line); }
+
+    .row {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--line); border-left: 4px solid var(--line);
+      border-radius: 10px; padding: 11px 12px 11px 11px;
+      margin-bottom: 7px; transition: opacity .15s;
+    }
+    .row[data-kid="Maddie"] { border-left-color: var(--maddie); }
+    .row[data-kid="Emily"]  { border-left-color: var(--emily); }
+    .row[data-kid="Cooper"] { border-left-color: var(--cooper); }
+    .row.is-out { opacity: .42; }
+    .row.is-busy { opacity: .6; }
+
+    /* carpool card wraps the same header, then adds legs underneath */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line); border-left: 4px solid var(--line);
+      border-radius: 10px; margin-bottom: 8px; overflow: hidden;
+    }
+    .card[data-kid="Maddie"] { border-left-color: var(--maddie); }
+    .card[data-kid="Emily"]  { border-left-color: var(--emily); }
+    .card[data-kid="Cooper"] { border-left-color: var(--cooper); }
+    .card > .row { border: 0; border-radius: 0; margin: 0; background: none; }
+
+    .when {
+      flex: 0 0 58px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 19px; font-weight: 600;
+      letter-spacing: 0.02em; color: var(--text); line-height: 1.1;
+    }
+    .when small {
+      display: block; font-size: 11px; font-weight: 500;
+      letter-spacing: 0.1em; color: var(--text-faint);
+    }
+
+    .body { flex: 1 1 auto; min-width: 0; }
+    .name {
+      font-weight: 600; font-size: 14.5px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .meta {
+      font-size: 12.5px; color: var(--text-dim);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px;
+    }
+    .tag {
+      display: inline-block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: #FFB4A8; border: 1px solid #6B3A34;
+      border-radius: 4px; padding: 0 5px; margin-right: 5px; vertical-align: 1px;
+    }
+
+    /* ---------- the IN / OUT switch ---------- */
+
+    .toggle {
+      flex: 0 0 auto; position: relative;
+      width: 74px; height: 34px; border: 0; border-radius: 999px;
+      background: var(--out); cursor: pointer; padding: 0;
+      overflow: hidden; transition: background .18s ease;
+    }
+    .toggle[aria-checked="true"] { background: var(--in); }
+    .toggle:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+    .knob {
+      position: absolute; top: 3px; left: 3px;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #fff; transition: transform .18s cubic-bezier(.4,.9,.3,1);
+    }
+    .toggle[aria-checked="true"] .knob { transform: translateX(40px); }
+    .lbl {
+      position: absolute; top: 0; height: 100%;
+      display: flex; align-items: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 0.12em; transition: opacity .14s;
+    }
+    .lbl-in  { left: 11px;  color: #04361C; opacity: 0; }
+    .lbl-out { right: 10px; color: #C6D0DB; opacity: 1; }
+    .toggle[aria-checked="true"] .lbl-in  { opacity: 1; }
+    .toggle[aria-checked="true"] .lbl-out { opacity: 0; }
+
+    /* ---------- carpool legs ---------- */
+
+    .legs { display: flex; border-top: 1px solid var(--line); }
+    .leg {
+      flex: 1; padding: 10px 12px; text-align: left;
+      background: none; border: 0; color: inherit; cursor: pointer;
+      transition: background .12s; min-width: 0;
+    }
+    .leg + .leg { border-left: 1px solid var(--line); }
+    .leg:active { background: var(--surface-2); }
+    .leg.warn { background: rgba(255,107,107,.09); }
+    .leg-dir {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--text-faint);
+    }
+    .leg-driver {
+      margin-top: 4px; font-size: 14px; font-weight: 600;
+      display: flex; align-items: center; gap: 6px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .leg-driver.unset { color: var(--open); font-weight: 500; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; flex: 0 0 auto; }
+    .leg-riders {
+      margin-top: 3px; font-size: 12px; color: var(--text-dim);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .skipped {
+      padding: 10px 12px; border-top: 1px solid var(--line);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12.5px; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-faint);
+    }
+
+    /* ---------- setup ---------- */
+
+    .group { margin-bottom: 8px; }
+    .group-head {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface); border: 1px solid var(--line);
+      border-left: 4px solid var(--line);
+      border-radius: 10px 10px 0 0; padding: 11px 12px;
+    }
+    .group[data-kid="Maddie"] .group-head { border-left-color: var(--maddie); }
+    .group[data-kid="Emily"]  .group-head { border-left-color: var(--emily); }
+    .group[data-kid="Cooper"] .group-head { border-left-color: var(--cooper); }
+    .group-body {
+      background: var(--surface); border: 1px solid var(--line);
+      border-top: 0; border-left-width: 4px; border-left-color: transparent;
+      border-radius: 0 0 10px 10px; overflow: hidden;
+    }
+    .rulehead {
+      flex: 0 0 96px; align-self: center; padding-left: 12px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; letter-spacing: 0.06em;
+      color: var(--text-dim); line-height: 1.2;
+    }
+    .rowbtn {
+      display: block; width: 100%; text-align: left;
+      background: none; border: 0; border-top: 1px solid var(--line);
+      color: inherit; padding: 11px 12px; cursor: pointer;
+    }
+    .rowbtn:active { background: var(--surface-2); }
+    .rowbtn b { display: block; font-size: 14px; font-weight: 600; }
+    .rowbtn span { display: block; font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+    .addbtn {
+      display: block; width: 100%; text-align: left;
+      background: none; border: 0; border-top: 1px solid var(--line);
+      padding: 11px 12px; cursor: pointer; color: var(--us);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    }
+
+    /* ---------- bottom sheet ---------- */
+
+    .scrim {
+      position: fixed; inset: 0; background: rgba(8,10,13,.74);
+      opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 40;
+    }
+    .scrim.on { opacity: 1; pointer-events: auto; }
+    .sheet {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+      background: var(--surface);
+      border-radius: 16px 16px 0 0; border-top: 1px solid var(--line);
+      transform: translateY(102%);
+      transition: transform .26s cubic-bezier(.32,.72,0,1);
+      max-height: 88vh; overflow-y: auto;
+      padding-bottom: env(safe-area-inset-bottom);
+      max-width: 640px; margin: 0 auto;
+    }
+    .sheet.on { transform: translateY(0); }
+    .grab { width: 34px; height: 4px; border-radius: 3px; background: var(--line); margin: 9px auto 0; }
+    .sheet-h { padding: 14px 18px 12px; border-bottom: 1px solid var(--line); }
+    .sheet-h .k {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--text-faint);
+    }
+    .sheet-h .t { margin-top: 3px; font-size: 16px; font-weight: 600; }
+    .sec { padding: 14px 18px; }
+    .sec + .sec { border-top: 1px solid var(--line); }
+    .sec-l {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--text-faint); margin-bottom: 9px;
+    }
+    .sub-l {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--text-faint); margin: 14px 0 8px;
+    }
+    .sub-l:first-child { margin-top: 0; }
+    .opts { display: flex; gap: 7px; flex-wrap: wrap; }
+    .opt {
+      padding: 8px 13px; border: 1px solid var(--line); border-radius: 20px;
+      font-size: 13.5px; background: none; color: inherit; cursor: pointer;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .opt[aria-pressed="true"] { border-color: currentColor; font-weight: 600; }
+    .rider {
+      display: flex; align-items: center; gap: 11px;
+      padding: 9px 0; border-bottom: 1px solid rgba(46,55,66,.55);
+      cursor: pointer;
+    }
+    .rider:last-child { border-bottom: 0; }
+    .check {
+      width: 21px; height: 21px; border-radius: 5px;
+      border: 1.5px solid var(--line); flex: 0 0 auto;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; color: var(--ink);
+    }
+    .check.on { background: var(--us); border-color: var(--us); }
+    .rider-n { flex: 1 1 auto; min-width: 0; }
+    .rider-n b { display: block; font-size: 13.5px; font-weight: 600; }
+    .rider-n span { display: block; font-size: 12px; color: var(--text-dim); }
+    .ours {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; letter-spacing: 0.1em; font-weight: 600;
+    }
+    .callbtn {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; letter-spacing: 0.1em;
+      color: var(--maddie); text-decoration: none;
+      border: 1px solid var(--line); padding: 6px 9px; border-radius: 5px;
+    }
+    .fld {
+      width: 100%; padding: 11px 12px; background: var(--ink);
+      border: 1px solid var(--line); border-radius: 7px;
+      color: var(--text); font-size: 16px;
+      font-family: Inter, system-ui, sans-serif;
+    }
+    .fldwrap { margin-bottom: 12px; }
+    .pair { display: flex; gap: 8px; }
+    .pair > div { flex: 1 1 0; min-width: 0; }
+    pre.note {
+      margin: 0; background: var(--ink); border: 1px solid var(--line);
+      border-radius: 7px; padding: 12px;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 11.5px; line-height: 1.6; color: var(--text-dim);
+      white-space: pre-wrap; word-break: break-word;
+    }
+    textarea.note {
+      width: 100%; min-height: 190px;
+      background: var(--ink); border: 1px solid var(--line);
+      border-radius: 7px; padding: 12px; color: var(--text-dim);
+      font-family: ui-monospace, Menlo, monospace; font-size: 12px; line-height: 1.5;
+    }
+    .done {
+      width: 100%; padding: 14px; background: var(--us); color: #fff;
+      border: 0; border-radius: 8px; font-size: 15px; font-weight: 600;
+      cursor: pointer; margin: 4px 0 14px;
+    }
+    .danger {
+      width: 100%; padding: 12px; background: none; border: 0;
+      color: var(--alert); cursor: pointer; margin-bottom: 14px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    }
+
+    /* ---------- states ---------- */
+
+    .empty, .loading {
+      text-align: center; color: var(--text-dim);
+      padding: 56px 20px; font-size: 14px;
+    }
+    .empty strong {
+      display: block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text); margin-bottom: 6px;
+    }
+
+    .toast {
+      position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom));
+      transform: translate(-50%, 90px);
+      background: var(--surface-2); border: 1px solid var(--line);
+      color: var(--text); font-size: 13.5px;
+      padding: 10px 16px; border-radius: 999px;
+      box-shadow: 0 8px 28px rgba(0,0,0,.5);
+      transition: transform .22s cubic-bezier(.3,.9,.3,1);
+      z-index: 60; max-width: 90vw; text-align: center;
+    }
+    .toast.show { transform: translate(-50%, 0); }
+    .toast.err { border-color: #7A3B33; color: #FFC9C0; }
+
+    footer { display: flex; justify-content: center; gap: 18px; padding: 4px 0 28px; flex-wrap: wrap; }
+    .link {
+      background: none; border: 0; color: var(--text-faint);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      cursor: pointer; padding: 6px;
+    }
+    .link:hover { color: var(--text-dim); }
+    .link:focus-visible { outline: 2px solid var(--in); outline-offset: 2px; }
+
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="masthead">
+      <div class="crest">
+        <img src="data:image/png;base64,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" alt="North Dallas Panthers">
+        <h1>Kids Soccer</h1>
+      </div>
+      <div class="count" id="count">Loading</div>
+    </div>
+
+    <div class="modes" id="modes">
+      <button data-mode="att" aria-pressed="true">Attendance</button>
+      <button data-mode="car" aria-pressed="false">Carpool</button>
+      <button data-mode="set" aria-pressed="false">Setup</button>
+    </div>
+
+    <div class="filters" id="kidFilters"></div>
+    <div class="filters" id="typeFilters">
+      <button class="chip" data-type="all" aria-pressed="true">All</button>
+      <button class="chip" data-type="Practice" aria-pressed="false">Practice</button>
+      <button class="chip" data-type="Game" aria-pressed="false">Games</button>
+      <button class="chip" data-type="Pickup" aria-pressed="false">Pick-Up</button>
+    </div>
+  </header>
+
+  <div id="banners"></div>
+
+  <main id="list">
+    <div class="loading">Loading the schedule…</div>
+  </main>
+
+  <footer id="foot"></footer>
+
+  <div class="scrim" id="scrim"></div>
+  <div class="sheet" id="sheet"><div class="grab"></div><div id="sheetBody"></div></div>
+  <div class="toast" id="toast"></div>
+
+<script>
+  // ==========================================================================
+  // STATE
+  // ==========================================================================
+
+  var MODE = 'att';
+  var ALL = [];            // attendance events, from getSchedule
+  var CP = null;           // carpool payload, from getCarpoolData
+  var kidFilter = 'all';
+  var typeFilter = 'all';
+  var toastTimer = null;
+  var saveTimer = null;
+  var cur = null;          // { uid, dir } while a leg sheet is open
+
+  var KID_COLOR = { Maddie: 'var(--maddie)', Emily: 'var(--emily)', Cooper: 'var(--cooper)' };
+  var WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function toast(msg, isErr) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show' + (isErr ? ' err' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.className = 'toast'; }, isErr ? 4200 : 2000);
+  }
+
+  // ==========================================================================
+  // LOADING
+  // ==========================================================================
+
+  function loadSchedule(then) {
+    google.script.run
+      .withSuccessHandler(function (data) {
+        ALL = data.events || [];
+        buildKidChips(data.players || []);
+        if (then) then(); else render();
+      })
+      .withFailureHandler(function (err) {
+        document.getElementById('list').innerHTML =
+          '<div class="empty"><strong>Could not load</strong>' + esc(err.message) + '</div>';
+        document.getElementById('count').textContent = '';
+      })
+      .getSchedule(21);
+  }
+
+  function loadCarpool(then) {
+    document.getElementById('list').innerHTML = '<div class="loading">Loading carpool…</div>';
+    google.script.run
+      .withSuccessHandler(function (data) {
+        CP = data;
+        if (then) then(); else render();
+      })
+      .withFailureHandler(function (err) {
+        document.getElementById('list').innerHTML =
+          '<div class="empty"><strong>Could not load carpool</strong>' +
+          esc(err.message) +
+          '<br><br>If the tabs do not exist yet, run setupCarpoolTabs() once in the editor.</div>';
+      })
+      .getCarpoolData(21);
+  }
+
+  function needCarpool(then) {
+    if (CP) { then(); return; }
+    loadCarpool(then);
+  }
+
+  // ==========================================================================
+  // MODE + FILTERS
+  // ==========================================================================
+
+  document.getElementById('modes').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button');
+    if (!b) return;
+    MODE = b.dataset.mode;
+    Array.prototype.forEach.call(this.querySelectorAll('button'), function (x) {
+      x.setAttribute('aria-pressed', x === b ? 'true' : 'false');
+    });
+    var hide = (MODE === 'set');
+    document.getElementById('kidFilters').classList.toggle('hidden', hide);
+    document.getElementById('typeFilters').classList.toggle('hidden', hide);
+
+    if (MODE === 'att') render();
+    else needCarpool(render);
+  });
+
+  function buildKidChips(players) {
+    var wrap = document.getElementById('kidFilters');
+    if (wrap.childElementCount) return;   // only build once
+
+    var html = '<button class="chip" data-kid="all" aria-pressed="true">Everyone</button>';
+    players.forEach(function (p) {
+      html += '<button class="chip" data-kid="' + esc(p) + '" aria-pressed="false">' + esc(p) + '</button>';
+    });
+    wrap.innerHTML = html;
+
+    wrap.addEventListener('click', function (ev) {
+      var b = ev.target.closest('.chip');
+      if (!b) return;
+      kidFilter = b.dataset.kid;
+      setPressed(wrap, b);
+      render();
+    });
+  }
+
+  function setPressed(wrap, active) {
+    Array.prototype.forEach.call(wrap.querySelectorAll('.chip'), function (c) {
+      c.setAttribute('aria-pressed', c === active ? 'true' : 'false');
+    });
+  }
+
+  document.getElementById('typeFilters').addEventListener('click', function (ev) {
+    var b = ev.target.closest('.chip');
+    if (!b) return;
+    typeFilter = b.dataset.type;
+    setPressed(this, b);
+    render();
+  });
+
+  function passesFilter(e) {
+    if (kidFilter !== 'all' && e.player !== kidFilter) return false;
+    if (typeFilter !== 'all' && e.type !== typeFilter) return false;
+    return true;
+  }
+
+  // ==========================================================================
+  // SHARED HELPERS
+  // ==========================================================================
+
+  function splitTime(t) {
+    t = t || '';
+    var m = t.match(/^(\d{1,2}:\d{2})\s*(AM|PM)$/i);
+    if (m) return { t: m[1], ap: m[2].toUpperCase() };
+    if (/all day/i.test(t)) return { t: 'All', ap: 'DAY' };
+    return { t: t, ap: '' };
+  }
+
+  function kindLabel(type) {
+    return type === 'Game' ? 'Game'
+      : type === 'Practice' ? 'Practice'
+      : type === 'Pickup' ? 'Pick-Up' : type;
+  }
+
+  function eventHeaderHtml(e, withToggle) {
+    var s = splitTime(e.start);
+    var kind = kindLabel(e.type);
+    var detail = (e.type === 'Practice' || e.type === 'Game')
+      ? e.title.replace(/^(Practice|Game)\s-\s[^-]+\s-\s/, '') : '';
+    var venue = (e.location || '').split(',')[0];
+
+    var meta = [];
+    if (e.player) meta.push(e.player);
+    if (detail && detail !== kind) meta.push(detail);
+    if (venue) meta.push(venue);
+
+    return '<div class="row' + (withToggle && !e.going ? ' is-out' : '') +
+        '" data-kid="' + esc(e.player) + '" data-uid="' + esc(e.uid) + '">' +
+        '<div class="when">' + esc(s.t) + '<small>' + esc(s.ap) + '</small></div>' +
+        '<div class="body">' +
+          '<div class="name">' +
+            (e.cancelled ? '<span class="tag">Cancelled</span>' : '') + esc(kind) +
+          '</div>' +
+          '<div class="meta">' + esc(meta.join(' · ')) + '</div>' +
+        '</div>' +
+        (withToggle
+          ? '<button class="toggle" role="switch" aria-checked="' + (e.going ? 'true' : 'false') +
+            '" aria-label="Attendance for ' + esc(e.player) + ' ' + esc(kind) + '">' +
+            '<span class="lbl lbl-in">IN</span><span class="lbl lbl-out">OUT</span>' +
+            '<span class="knob"></span></button>'
+          : '') +
+      '</div>';
+  }
+
+  function driverById(id) {
+    if (!CP || !id) return null;
+    for (var i = 0; i < CP.drivers.length; i++) if (CP.drivers[i].id === id) return CP.drivers[i];
+    return null;
+  }
+  function isUs(id) {
+    var d = driverById(id);
+    return !!(d && d.us);
+  }
+  function familyById(id) {
+    if (!CP) return null;
+    for (var i = 0; i < CP.families.length; i++) if (CP.families[i].FamilyID === id) return CP.families[i];
+    return null;
+  }
+  function riderLabel(id) {
+    if (String(id).indexOf('k:') === 0) return String(id).substring(2);
+    var f = familyById(id);
+    return f ? f.Player : id;
+  }
+  function teamById(id) {
+    if (!CP) return null;
+    for (var i = 0; i < CP.teams.length; i++) if (CP.teams[i].TeamID === id) return CP.teams[i];
+    return null;
+  }
+  function teamLabel(id) {
+    var t = teamById(id);
+    return t ? (t.Display || t.Team) : 'Unknown team';
+  }
+  function cpEvent(uid) {
+    if (!CP) return null;
+    for (var i = 0; i < CP.events.length; i++) if (CP.events[i].uid === uid) return CP.events[i];
+    return null;
+  }
+
+  /** Minutes past midnight, for the double-booking check. */
+  function mins(t) {
+    var m = String(t || '').match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+    if (!m) return 0;
+    var h = parseInt(m[1], 10);
+    var ap = (m[3] || '').toUpperCase();
+    if (ap === 'PM' && h !== 12) h += 12;
+    if (ap === 'AM' && h === 12) h = 0;
+    return h * 60 + parseInt(m[2], 10);
+  }
+
+  /** Legs where one driver is on two runs inside the same 20-minute window. */
+  function conflictSet() {
+    var bad = {};
+    if (!CP) return bad;
+    var legs = [];
+    CP.events.forEach(function (e) {
+      if (e.out.driver)  legs.push({ e: e, d: e.out.driver, a: mins(e.start) - 20, b: mins(e.start), dir: 'out' });
+      if (e.back.driver) legs.push({ e: e, d: e.back.driver, a: mins(e.end), b: mins(e.end) + 20, dir: 'back' });
+    });
+    for (var i = 0; i < legs.length; i++) {
+      for (var j = i + 1; j < legs.length; j++) {
+        var x = legs[i], y = legs[j];
+        if (x.e.dateKey !== y.e.dateKey || x.d !== y.d) continue;
+        if (x.a < y.b && y.a < x.b) {
+          bad[x.e.uid + x.dir] = true;
+          bad[y.e.uid + y.dir] = true;
+        }
+      }
+    }
+    return bad;
+  }
+
+  // ==========================================================================
+  // RENDER
+  // ==========================================================================
+
+  function render() {
+    if (MODE === 'att') return renderAttendance();
+    if (MODE === 'car') return renderCarpool();
+    return renderSetup();
+  }
+
+  function renderAttendance() {
+    var rows = ALL.filter(passesFilter);
+    var list = document.getElementById('list');
+    var going = rows.filter(function (e) { return e.going; }).length;
+
+    document.getElementById('count').textContent = rows.length ? going + ' of ' + rows.length + ' in' : '';
+    document.getElementById('banners').innerHTML = '';
+    document.getElementById('foot').innerHTML =
+      '<button class="link" id="btnRefresh">Refresh</button>' +
+      '<button class="link" id="btnSync">Sync calendar</button>';
+
+    if (!rows.length) {
+      list.innerHTML = '<div class="empty"><strong>Nothing scheduled</strong>' +
+        'No events match this filter in the next three weeks.</div>';
+      return;
+    }
+
+    var html = '', lastDay = '';
+    rows.forEach(function (e) {
+      if (e.dateKey !== lastDay) {
+        lastDay = e.dateKey;
+        html += '<div class="daybar"><span>' + esc(e.dateLabel) + '</span><i></i></div>';
+      }
+      html += eventHeaderHtml(e, true);
+    });
+    list.innerHTML = html;
+  }
+
+  function renderCarpool() {
+    var rows = CP.events.filter(passesFilter);
+    var list = document.getElementById('list');
+    var bad = conflictSet();
+
+    var open = 0;
+    CP.events.forEach(function (e) {
+      if (!e.out.driver) open++;
+      if (!e.back.driver) open++;
+    });
+
+    document.getElementById('count').textContent =
+      open ? open + (open === 1 ? ' leg open' : ' legs open') : 'all covered';
+
+    var nBad = Object.keys(bad).length / 2;
+    document.getElementById('banners').innerHTML = nBad
+      ? '<div class="banner"><b>Double-booked</b><p>One driver is on two runs at the ' +
+        'same time. Tap a highlighted leg to hand it off.</p></div>'
+      : '';
+
+    document.getElementById('foot').innerHTML =
+      '<button class="link" id="btnReloadCp">Refresh</button>' +
+      '<button class="link" id="btnGroupText">Copy group text</button>';
+
+    if (!CP.families.length) {
+      document.getElementById('banners').innerHTML +=
+        '<div class="hint">No families added yet. Legs still work — pick yourself as ' +
+        'the driver — but to add other kids and their addresses, go to Setup.</div>';
+    }
+
+    if (!rows.length) {
+      list.innerHTML = '<div class="empty"><strong>Nothing to drive to</strong>' +
+        'No events match this filter. Anything marked OUT in Attendance is hidden here.</div>';
+      return;
+    }
+
+    var html = '', lastDay = '';
+    rows.forEach(function (e) {
+      if (e.dateKey !== lastDay) {
+        lastDay = e.dateKey;
+        html += '<div class="daybar"><span>' + esc(e.dateLabel) + '</span><i></i>' +
+                '<button class="link" data-textday="' + esc(e.dateKey) + '">Text</button></div>';
+      }
+      html += '<div class="card" data-kid="' + esc(e.player) + '">' +
+        eventHeaderHtml(e, false) +
+        '<div class="legs">' + legHtml(e, 'out', bad) + legHtml(e, 'back', bad) + '</div>' +
+      '</div>';
+    });
+    list.innerHTML = html;
+  }
+
+  function legHtml(e, dir, bad) {
+    var L = e[dir];
+    var d = driverById(L.driver);
+    var warn = bad[e.uid + dir] ? ' warn' : '';
+    var names = (L.riders || []).map(riderLabel);
+    var sub = names.length ? names.join(', ') : (d ? 'no one marked' : '&nbsp;');
+
+    return '<button class="leg' + warn + '" data-leg="' + esc(e.uid) + '" data-dir="' + dir + '">' +
+      '<div class="leg-dir">' + (dir === 'out' ? '&#9654; To' : '&#9664; From') + '</div>' +
+      '<div class="leg-driver' + (d ? '' : ' unset') + '">' +
+        (d ? '<span class="dot" style="background:' + (d.us ? 'var(--us)' : 'var(--text-faint)') + '"></span>' +
+             esc(d.name)
+           : 'Needs a driver') +
+      '</div>' +
+      '<div class="leg-riders">' + (sub === '&nbsp;' ? sub : esc(sub)) + '</div>' +
+    '</button>';
+  }
+
+  function renderSetup() {
+    var list = document.getElementById('list');
+    document.getElementById('count').textContent =
+      CP.families.length + (CP.families.length === 1 ? ' family' : ' families');
+    document.getElementById('banners').innerHTML = '';
+    document.getElementById('foot').innerHTML =
+      '<button class="link" id="btnReloadCp">Refresh</button>' +
+      '<button class="link" id="btnApplyDefaults">Apply defaults</button>';
+
+    if (!CP.teams.length) {
+      list.innerHTML = '<div class="empty"><strong>No teams yet</strong>' +
+        'Run setupCarpoolTabs() once in the Apps Script editor, then refresh.</div>';
+      return;
+    }
+
+    var html = '<div class="daybar"><span>Usual driver</span><i></i>' +
+               '<span style="color:var(--text-faint)">fills new events</span></div>';
+
+    CP.teams.forEach(function (T) {
+      html += '<div class="group" data-kid="' + esc(T.Kid) + '">' +
+        '<div class="group-head"><div class="body"><div class="name">' +
+        esc(T.Display || T.Team) + '</div></div></div><div class="group-body">';
+
+      // One Defaults row per direction; pair them up for display.
+      var groups = {};
+      var order = [];
+      CP.defaults.filter(function (d) { return d.TeamID === T.TeamID; }).forEach(function (d) {
+        var key = (d.Type || 'Any') + '|' + (d.Weekday || '');
+        if (!groups[key]) { groups[key] = { type: d.Type, weekday: d.Weekday }; order.push(key); }
+        groups[key][String(d.Direction).toLowerCase() === 'back' ? 'back' : 'out'] = d;
+      });
+
+      order.forEach(function (key) {
+        var g = groups[key];
+        var label = (g.type || 'Any') + (g.weekday ? ' · ' + g.weekday : ' · any day');
+        html += '<div class="legs"><div class="rulehead">' + esc(label) + '</div>' +
+          defLegHtml(T, g, 'out') + defLegHtml(T, g, 'back') + '</div>';
+      });
+
+      html += '<button class="addbtn" data-addrule="' + esc(T.TeamID) + '">+ Add a rule</button>';
+      html += '</div></div>';
+    });
+
+    html += '<div class="daybar" style="margin-top:26px"><span>Families</span><i></i>' +
+            '<span style="color:var(--text-faint)">tap to edit</span></div>';
+
+    CP.teams.forEach(function (T) {
+      var fams = CP.families.filter(function (f) { return f.TeamID === T.TeamID; });
+      html += '<div class="group" data-kid="' + esc(T.Kid) + '">' +
+        '<div class="group-head"><div class="body"><div class="name">' +
+        esc(T.Display || T.Team) + '</div><div class="meta">' +
+        fams.length + (fams.length === 1 ? ' family' : ' families') +
+        '</div></div></div><div class="group-body">';
+
+      fams.forEach(function (f) {
+        var parents = [];
+        if (f.P1Name) parents.push(f.P1Name + ' ' + f.P1Phone);
+        if (f.P2Name) parents.push(f.P2Name + ' ' + f.P2Phone);
+        html += '<button class="rowbtn" data-editfam="' + esc(f.FamilyID) + '">' +
+          '<b>' + esc(f.Player) + '</b>' +
+          '<span>' + esc(parents.join('  ·  ') || 'no parents on file') + '</span>' +
+          '<span>' + esc(f.Address || 'no address yet') + '</span></button>';
+      });
+
+      html += '<button class="addbtn" data-addfam="' + esc(T.TeamID) + '">+ Add a family</button>';
+      html += '</div></div>';
+    });
+
+    list.innerHTML = html;
+  }
+
+  function defLegHtml(T, g, dir) {
+    var rule = g[dir];
+    var d = rule ? driverById(rule.DriverID) : null;
+    return '<button class="leg" data-defteam="' + esc(T.TeamID) +
+      '" data-deftype="' + esc(g.type || '') + '" data-defday="' + esc(g.weekday || '') +
+      '" data-defdir="' + dir + '" data-defid="' + esc(rule ? rule.RuleID : '') + '">' +
+      '<div class="leg-dir">' + (dir === 'out' ? '&#9654; To' : '&#9664; From') + '</div>' +
+      '<div class="leg-driver' + (d ? '' : ' unset') + '">' +
+        (d ? '<span class="dot" style="background:' + (d.us ? 'var(--us)' : 'var(--text-faint)') + '"></span>' +
+             esc(d.name)
+           : 'Ask each time') +
+      '</div></button>';
+  }
+
+  // ==========================================================================
+  // ATTENDANCE WRITES
+  // ==========================================================================
+
+  document.getElementById('list').addEventListener('click', function (ev) {
+    var t;
+
+    if ((t = ev.target.closest('.toggle'))) return onToggle(t);
+    if ((t = ev.target.closest('.leg'))) {
+      if (t.dataset.leg) return openLegSheet(t.dataset.leg, t.dataset.dir);
+      if (t.dataset.defdir) return openDefaultSheet(t.dataset);
+    }
+    if ((t = ev.target.closest('[data-editfam]'))) return openFamilySheet(t.dataset.editfam, null);
+    if ((t = ev.target.closest('[data-addfam]')))  return openFamilySheet(null, t.dataset.addfam);
+    if ((t = ev.target.closest('[data-addrule]'))) return openAddRuleSheet(t.dataset.addrule);
+    if ((t = ev.target.closest('[data-textday]'))) return openGroupText(t.dataset.textday);
+  });
+
+  function onToggle(btn) {
+    var row = btn.closest('.row');
+    var uid = row.dataset.uid;
+    var rec = null;
+    for (var i = 0; i < ALL.length; i++) { if (ALL[i].uid === uid) { rec = ALL[i]; break; } }
+    if (!rec || row.classList.contains('is-busy')) return;
+
+    var next = !rec.going;
+
+    // Flip immediately, put it back if the server says no.
+    rec.going = next;
+    btn.setAttribute('aria-checked', next ? 'true' : 'false');
+    row.classList.toggle('is-out', !next);
+    row.classList.add('is-busy');
+    refreshCount();
+
+    google.script.run
+      .withSuccessHandler(function (res) {
+        row.classList.remove('is-busy');
+        CP = null;   // carpool list depends on who is going
+        toast(next
+          ? 'Back on the calendar'
+          : (res && res.calendarUpdated ? 'Off the calendar' : 'Saved, calendar updates shortly'));
+      })
+      .withFailureHandler(function (err) {
+        rec.going = !next;
+        btn.setAttribute('aria-checked', !next ? 'true' : 'false');
+        row.classList.toggle('is-out', next);
+        row.classList.remove('is-busy');
+        refreshCount();
+        toast(err.message || 'Could not save that', true);
+      })
+      .setGoing(uid, next);
+  }
+
+  function refreshCount() {
+    var rows = ALL.filter(passesFilter);
+    var going = rows.filter(function (e) { return e.going; }).length;
+    document.getElementById('count').textContent = rows.length ? going + ' of ' + rows.length + ' in' : '';
+  }
+
+  // ==========================================================================
+  // BOTTOM SHEET
+  // ==========================================================================
+
+  function openSheet(html) {
+    document.getElementById('sheetBody').innerHTML = html;
+    document.getElementById('scrim').classList.add('on');
+    document.getElementById('sheet').classList.add('on');
+  }
+  function closeSheet() {
+    flushLegSave();
+    document.getElementById('scrim').classList.remove('on');
+    document.getElementById('sheet').classList.remove('on');
+    cur = null;
+  }
+  document.getElementById('scrim').addEventListener('click', closeSheet);
+
+  // ---- leg assignment ------------------------------------------------------
+
+  function openLegSheet(uid, dir) {
+    var e = cpEvent(uid);
+    if (!e) return;
+    cur = { uid: uid, dir: dir };
+    var L = e[dir];
+
+    var mine = CP.drivers.filter(function (d) { return d.us; });
+    var theirs = CP.drivers.filter(function (d) { return !d.us && d.teamId === e.teamId; });
+    var others = CP.drivers.filter(function (d) { return !d.us && d.teamId !== e.teamId; });
+
+    function chip(d) {
+      var on = L.driver === d.id;
+      return '<button class="opt" aria-pressed="' + on + '" data-driver="' + esc(d.id) + '"' +
+        (on ? ' style="color:' + (d.us ? 'var(--us)' : 'var(--text)') + '"' : '') + '>' +
+        '<span class="dot" style="background:' + (d.us ? 'var(--us)' : 'var(--text-faint)') + '"></span>' +
+        esc(d.name) + '</button>';
+    }
+
+    var html =
+      '<div class="sheet-h"><div class="k">' +
+        (dir === 'out' ? 'Ride to' : 'Ride home from') + ' · ' + esc(e.dateLabel) + ' ' +
+        esc(dir === 'out' ? e.start : e.end) +
+      '</div><div class="t">' + esc(e.title) + '</div></div>' +
+
+      '<div class="sec"><div class="sec-l">Who is driving</div>' +
+        '<div class="sub-l">Us</div><div class="opts">' +
+          mine.map(chip).join('') +
+          '<button class="opt" aria-pressed="' + (!L.driver) + '" data-driver=""' +
+            (!L.driver ? ' style="color:var(--open)"' : '') + '>Not set</button>' +
+        '</div>' +
+        '<div class="sub-l">' + esc(teamLabel(e.teamId)) + '</div><div class="opts">' +
+          (theirs.length ? theirs.map(chip).join('')
+            : '<span style="font-size:13px;color:var(--text-dim)">No families added yet</span>') +
+        '</div>' +
+        (others.length ? '<div class="sub-l">Other teams</div><div class="opts">' +
+          others.map(chip).join('') + '</div>' : '') +
+      '</div>' +
+
+      '<div class="sec"><div class="sec-l">Who is in the car</div>' +
+        (!L.driver
+          ? '<p style="margin:0;font-size:13px;color:var(--text-dim)">Pick a driver above first.</p>'
+          : '<div class="sub-l">Ours</div>' +
+            CP.kids.map(function (k) { return riderRowHtml('k:' + k, k, '', true, k, L); }).join('') +
+            '<div class="sub-l">' + esc(teamLabel(e.teamId)) + '</div>' +
+            (CP.families.filter(function (f) { return f.TeamID === e.teamId; }).length
+              ? CP.families.filter(function (f) { return f.TeamID === e.teamId; })
+                  .map(function (f) {
+                    var sub = f.Address + (f.Notes ? ' · ' + f.Notes : '');
+                    return riderRowHtml(f.FamilyID, f.Player, sub, false, '', L, f.P1Phone);
+                  }).join('')
+              : '<p style="margin:0;font-size:13px;color:var(--text-dim)">No families on this team yet. ' +
+                'Add them in Setup.</p>')
+        ) +
+      '</div>' +
+
+      '<div class="sec"><div class="sec-l">Goes in the calendar note</div>' +
+        '<pre class="note" id="notePreview">' + esc(notePreview(e)) + '</pre></div>' +
+
+      '<div class="sec"><button class="done" data-close="1">Done</button></div>';
+
+    openSheet(html);
+  }
+
+  function riderRowHtml(id, name, sub, isOurs, kid, L, phone) {
+    var on = (L.riders || []).indexOf(id) !== -1;
+    return '<div class="rider" data-rider="' + esc(id) + '">' +
+      '<div class="check' + (on ? ' on' : '') + '">' + (on ? '&#10003;' : '') + '</div>' +
+      '<div class="rider-n"><b>' + esc(name) +
+        (isOurs ? ' <span class="ours" style="color:' + (KID_COLOR[kid] || 'var(--text-dim)') + '">OURS</span>' : '') +
+      '</b>' + (sub ? '<span>' + esc(sub) + '</span>' : '') + '</div>' +
+      (phone ? '<a class="callbtn" href="tel:' + esc(String(phone).replace(/[^0-9+]/g, '')) +
+        '" onclick="event.stopPropagation()">CALL</a>' : '') +
+    '</div>';
+  }
+
+  /** Client-side mirror of the server's block, for the preview only. */
+  function notePreview(e) {
+    function line(label, L) {
+      var d = driverById(L.driver);
+      if (!d) return label + '** no driver assigned **';
+      var mine = (L.riders || []).filter(function (r) { return r.indexOf('k:') === 0; })
+                                 .map(function (r) { return r.substring(2); });
+      var guests = (L.riders || []).filter(function (r) { return r.indexOf('k:') !== 0; })
+                                   .map(familyById).filter(Boolean);
+      var s = label + d.name + '  (' + (mine.length ? mine.join(', ') : 'none of ours') +
+              (guests.length ? ' +' + guests.length : '') + ')';
+      guests.forEach(function (f) {
+        s += '\n        ' + f.Player + ' — ' + f.Address + (f.Notes ? ' (' + f.Notes + ')' : '');
+        s += '\n        ' + f.P1Name + ' ' + f.P1Phone +
+             (f.P2Name ? '  /  ' + f.P2Name + ' ' + f.P2Phone : '');
+      });
+      return s;
+    }
+    return '--- CARPOOL ---\n' + line('TO:   ', e.out) + '\n' + line('HOME: ', e.back) +
+           '\n\n--- END CARPOOL ---';
+  }
+
+  // Sheet interactions
+  document.getElementById('sheet').addEventListener('click', function (ev) {
+    var t;
+
+    if (ev.target.closest('[data-close]')) return closeSheet();
+
+    if ((t = ev.target.closest('[data-driver]')) && cur) {
+      var e = cpEvent(cur.uid), L = e[cur.dir];
+      var id = t.dataset.driver || '';
+      L.driver = id;
+      if (!id) L.riders = [];
+      else if (!L.riders.length) L.riders = ['k:' + e.player];
+      queueLegSave();
+      renderCarpool();
+      openLegSheet(cur.uid, cur.dir);
+      return;
+    }
+
+    if ((t = ev.target.closest('[data-rider]')) && cur) {
+      var e2 = cpEvent(cur.uid), L2 = e2[cur.dir];
+      var rid = t.dataset.rider;
+      var i = L2.riders.indexOf(rid);
+      if (i === -1) L2.riders.push(rid); else L2.riders.splice(i, 1);
+      queueLegSave();
+      renderCarpool();
+      openLegSheet(cur.uid, cur.dir);
+      return;
+    }
+
+    if ((t = ev.target.closest('[data-savefam]')))   return saveFamilyFromSheet(t.dataset.savefam);
+    if ((t = ev.target.closest('[data-delfam]')))    return removeFamily(t.dataset.delfam);
+    if ((t = ev.target.closest('[data-setdef]')))    return saveDefaultFromSheet(t.dataset);
+    if ((t = ev.target.closest('[data-deldef]')))    return removeDefault(t.dataset.deldef);
+    if ((t = ev.target.closest('[data-createrule]'))) return createRule(t.dataset.createrule);
+    if ((t = ev.target.closest('[data-copytext]')))  return copyGroupText();
+  });
+
+  var pendingLeg = null;
+  function queueLegSave() {
+    if (!cur) return;
+    pendingLeg = { uid: cur.uid, dir: cur.dir };
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(flushLegSave, 700);
+  }
+  function flushLegSave() {
+    clearTimeout(saveTimer);
+    if (!pendingLeg) return;
+    var p = pendingLeg;
+    pendingLeg = null;
+
+    var e = cpEvent(p.uid);
+    if (!e) return;
+    var L = e[p.dir];
+
+    google.script.run
+      .withSuccessHandler(function (res) {
+        toast(res && res.calendarUpdated ? 'Saved' : 'Saved, calendar updates shortly');
+      })
+      .withFailureHandler(function (err) {
+        toast(err.message || 'Could not save that leg', true);
+        loadCarpool(render);
+      })
+      .setCarpoolLeg(p.uid, p.dir, L.driver || '', L.riders || []);
+  }
+
+  // ---- default rules -------------------------------------------------------
+
+  function openDefaultSheet(ds) {
+    var teamId = ds.defteam, dir = ds.defdir;
+    var mine = CP.drivers.filter(function (d) { return d.us; });
+    var theirs = CP.drivers.filter(function (d) { return !d.us && d.teamId === teamId; });
+    var ruleId = ds.defid || '';
+    var current = '';
+    if (ruleId) {
+      CP.defaults.forEach(function (r) { if (r.RuleID === ruleId) current = r.DriverID || ''; });
+    }
+
+    function chip(d) {
+      var on = current === d.id;
+      return '<button class="opt" aria-pressed="' + on + '" data-setdef="1"' +
+        ' data-ruleid="' + esc(ruleId) + '" data-team="' + esc(teamId) + '"' +
+        ' data-type="' + esc(ds.deftype) + '" data-day="' + esc(ds.defday) + '"' +
+        ' data-dir="' + dir + '" data-driverid="' + esc(d.id) + '">' +
+        '<span class="dot" style="background:' + (d.us ? 'var(--us)' : 'var(--text-faint)') + '"></span>' +
+        esc(d.name) + '</button>';
+    }
+
+    var label = (ds.deftype || 'Any') + (ds.defday ? ' · ' + ds.defday : ' · any day');
+
+    openSheet(
+      '<div class="sheet-h"><div class="k">Default · ' + esc(teamLabel(teamId)) + '</div>' +
+      '<div class="t">' + esc(label) + ' — ride ' + (dir === 'out' ? 'there' : 'home') + '</div></div>' +
+      '<div class="sec">' +
+        '<div class="sub-l">Us</div><div class="opts">' + mine.map(chip).join('') +
+          '<button class="opt" aria-pressed="' + (!current) + '" data-setdef="1"' +
+          ' data-ruleid="' + esc(ruleId) + '" data-team="' + esc(teamId) + '"' +
+          ' data-type="' + esc(ds.deftype) + '" data-day="' + esc(ds.defday) + '"' +
+          ' data-dir="' + dir + '" data-driverid="">Ask each time</button></div>' +
+        '<div class="sub-l">' + esc(teamLabel(teamId)) + '</div><div class="opts">' +
+          (theirs.length ? theirs.map(chip).join('')
+            : '<span style="font-size:13px;color:var(--text-dim)">No families yet</span>') + '</div>' +
+        '<p style="font-size:12.5px;color:var(--text-dim);line-height:1.5;margin:16px 0 0">' +
+        'New events matching this rule get filled in automatically. Anything you have already ' +
+        'set by hand stays put.</p>' +
+      '</div>' +
+      (ruleId ? '<div class="sec"><button class="danger" data-deldef="' + esc(ruleId) + '">Delete this rule</button></div>' : '') +
+      '<div class="sec"><button class="done" data-close="1">Done</button></div>');
+  }
+
+  function saveDefaultFromSheet(ds) {
+    var rec = {
+      RuleID: ds.ruleid || '',
+      TeamID: ds.team,
+      Type: ds.type || '',
+      Weekday: ds.day || '',
+      Direction: ds.dir,
+      DriverID: ds.driverid || ''
+    };
+    google.script.run
+      .withSuccessHandler(function () { toast('Default saved'); loadCarpool(render); closeSheet(); })
+      .withFailureHandler(function (err) { toast(err.message || 'Could not save', true); })
+      .saveDefaultRule(rec);
+  }
+
+  function removeDefault(ruleId) {
+    google.script.run
+      .withSuccessHandler(function () { toast('Rule deleted'); loadCarpool(render); closeSheet(); })
+      .withFailureHandler(function (err) { toast(err.message || 'Could not delete', true); })
+      .deleteDefaultRule(ruleId);
+  }
+
+  function openAddRuleSheet(teamId) {
+    openSheet(
+      '<div class="sheet-h"><div class="k">' + esc(teamLabel(teamId)) + '</div>' +
+      '<div class="t">New rule</div></div>' +
+      '<div class="sec"><div class="sec-l">What kind of event</div>' +
+        '<div class="opts" id="ruleType">' +
+          ['Practice', 'Game', 'Pickup'].map(function (t, i) {
+            return '<button class="opt" aria-pressed="' + (i === 0) + '" data-rt="' + t + '">' +
+              (t === 'Pickup' ? 'Pick-Up' : t) + '</button>';
+          }).join('') +
+        '</div>' +
+        '<div class="sub-l">Which day</div>' +
+        '<div class="opts" id="ruleDay">' +
+          '<button class="opt" aria-pressed="true" data-rd="">Any day</button>' +
+          WEEKDAYS.map(function (d) {
+            return '<button class="opt" aria-pressed="false" data-rd="' + d + '">' + d + '</button>';
+          }).join('') +
+        '</div>' +
+        '<p style="font-size:12.5px;color:var(--text-dim);line-height:1.5;margin:16px 0 0">' +
+        'This creates an empty there-and-back pair. Tap each half afterwards to say who drives.</p>' +
+      '</div>' +
+      '<div class="sec"><button class="done" data-createrule="' + esc(teamId) + '">Create</button></div>');
+
+    ['ruleType', 'ruleDay'].forEach(function (id) {
+      document.getElementById(id).addEventListener('click', function (ev) {
+        var b = ev.target.closest('.opt');
+        if (!b) return;
+        Array.prototype.forEach.call(this.querySelectorAll('.opt'), function (x) {
+          x.setAttribute('aria-pressed', x === b ? 'true' : 'false');
+        });
+      });
+    });
+  }
+
+  function createRule(teamId) {
+    var type = document.querySelector('#ruleType .opt[aria-pressed="true"]').dataset.rt;
+    var day = document.querySelector('#ruleDay .opt[aria-pressed="true"]').dataset.rd;
+
+    var done = 0;
+    ['out', 'back'].forEach(function (dir) {
+      google.script.run
+        .withSuccessHandler(function () {
+          if (++done === 2) { toast('Rule added'); loadCarpool(render); closeSheet(); }
+        })
+        .withFailureHandler(function (err) { toast(err.message || 'Could not add', true); })
+        .saveDefaultRule({ RuleID: '', TeamID: teamId, Type: type, Weekday: day,
+                           Direction: dir, DriverID: '' });
+    });
+  }
+
+  // ---- families ------------------------------------------------------------
+
+  function openFamilySheet(famId, teamId) {
+    var f = famId ? familyById(famId)
+      : { FamilyID: '', TeamID: teamId, Player: '', P1Name: '', P1Phone: '',
+          P2Name: '', P2Phone: '', Address: '', Notes: '' };
+    if (!f) return;
+
+    function fld(label, id, val, ph) {
+      return '<div class="fldwrap"><div class="sec-l" style="margin-bottom:5px">' + esc(label) + '</div>' +
+        '<input class="fld" id="' + id + '" value="' + esc(val) + '" placeholder="' + esc(ph) + '"></div>';
+    }
+
+    openSheet(
+      '<div class="sheet-h"><div class="k">' + esc(teamLabel(f.TeamID)) + '</div>' +
+      '<div class="t">' + (famId ? 'Edit ' + esc(f.Player) : 'New family') + '</div></div>' +
+      '<div class="sec">' +
+        fld('Player', 'fPlayer', f.Player, 'First Last') +
+        '<div class="pair"><div>' + fld('Parent 1', 'fP1', f.P1Name, 'Name') + '</div>' +
+        '<div>' + fld('Phone', 'fP1p', f.P1Phone, '214-555-0000') + '</div></div>' +
+        '<div class="pair"><div>' + fld('Parent 2', 'fP2', f.P2Name, 'Optional') + '</div>' +
+        '<div>' + fld('Phone', 'fP2p', f.P2Phone, 'Optional') + '</div></div>' +
+        fld('Address', 'fAddr', f.Address, 'Street address') +
+        fld('Notes', 'fNotes', f.Notes, 'Gate code, booster seat…') +
+        '<p style="font-size:12.5px;color:var(--text-dim);line-height:1.5;margin:2px 0 0">' +
+        'Both parents become drivers you can pick.</p>' +
+      '</div>' +
+      '<div class="sec"><button class="done" data-savefam="' + esc(f.FamilyID || 'new') +
+        '" data-team="' + esc(f.TeamID) + '">Save</button>' +
+        (famId ? '<button class="danger" data-delfam="' + esc(famId) + '">Remove from team</button>' : '') +
+      '</div>');
+  }
+
+  function saveFamilyFromSheet(id) {
+    var v = function (x) { return document.getElementById(x).value.trim(); };
+    if (!v('fPlayer')) { toast('Needs a player name at least', true); return; }
+
+    var teamId = document.querySelector('[data-savefam]').dataset.team;
+    var rec = {
+      FamilyID: (id === 'new' ? '' : id),
+      TeamID: teamId,
+      Player: v('fPlayer'),
+      P1Name: v('fP1'), P1Phone: v('fP1p'),
+      P2Name: v('fP2'), P2Phone: v('fP2p'),
+      Address: v('fAddr'), Notes: v('fNotes')
+    };
+
+    google.script.run
+      .withSuccessHandler(function () { toast('Saved'); loadCarpool(render); closeSheet(); })
+      .withFailureHandler(function (err) { toast(err.message || 'Could not save', true); })
+      .saveFamily(rec);
+  }
+
+  function removeFamily(id) {
+    google.script.run
+      .withSuccessHandler(function () { toast('Removed'); loadCarpool(render); closeSheet(); })
+      .withFailureHandler(function (err) { toast(err.message || 'Could not remove', true); })
+      .deleteFamily(id);
+  }
+
+  // ---- group text ----------------------------------------------------------
+
+  function openGroupText(dateKey) {
+    openSheet('<div class="sheet-h"><div class="k">Group text</div>' +
+      '<div class="t">Building…</div></div><div class="sec"><div class="loading">One moment…</div></div>');
+
+    google.script.run
+      .withSuccessHandler(function (text) {
+        openSheet('<div class="sheet-h"><div class="k">Group text</div>' +
+          '<div class="t">Paste this into the team chat</div></div>' +
+          '<div class="sec"><textarea class="note" id="gtext" readonly>' + esc(text) + '</textarea></div>' +
+          '<div class="sec"><button class="done" data-copytext="1">Copy</button>' +
+          '<button class="danger" style="color:var(--text-dim)" data-close="1">Close</button></div>');
+      })
+      .withFailureHandler(function (err) { toast(err.message || 'Could not build that', true); closeSheet(); })
+      .carpoolTextForDate(dateKey);
+  }
+
+  function copyGroupText() {
+    var ta = document.getElementById('gtext');
+    if (!ta) return;
+    ta.removeAttribute('readonly');
+    ta.select();
+    ta.setSelectionRange(0, 99999);
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    ta.setAttribute('readonly', 'readonly');
+    if (!ok && navigator.clipboard) {
+      navigator.clipboard.writeText(ta.value).then(function () { toast('Copied'); },
+        function () { toast('Select the text and copy manually', true); });
+      return;
+    }
+    toast(ok ? 'Copied' : 'Select the text and copy manually', !ok);
+  }
+
+  // ==========================================================================
+  // FOOTER
+  // ==========================================================================
+
+  document.getElementById('foot').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button');
+    if (!b) return;
+
+    if (b.id === 'btnRefresh') { toast('Refreshing…'); CP = null; loadSchedule(); return; }
+    if (b.id === 'btnReloadCp') { toast('Refreshing…'); loadCarpool(render); return; }
+
+    if (b.id === 'btnApplyDefaults') {
+      b.disabled = true;
+      toast('Filling open legs…');
+      google.script.run
+        .withSuccessHandler(function (res) {
+          b.disabled = false;
+          toast(res && res.filled ? res.filled + ' leg' + (res.filled > 1 ? 's' : '') + ' filled'
+                                  : 'Nothing left to fill');
+          loadCarpool(function () {
+            MODE = 'car';
+            Array.prototype.forEach.call(document.querySelectorAll('#modes button'), function (x) {
+              x.setAttribute('aria-pressed', x.dataset.mode === 'car' ? 'true' : 'false');
+            });
+            document.getElementById('kidFilters').classList.remove('hidden');
+            document.getElementById('typeFilters').classList.remove('hidden');
+            render();
+          });
+        })
+        .withFailureHandler(function (err) { b.disabled = false; toast(err.message || 'Failed', true); })
+        .applyDefaultsToUpcoming();
+      return;
+    }
+
+    if (b.id === 'btnGroupText') {
+      var first = CP && CP.events.length ? CP.events[0].dateKey : null;
+      if (first) openGroupText(first); else toast('Nothing scheduled');
+      return;
+    }
+
+    if (b.id === 'btnSync') {
+      b.disabled = true;
+      b.textContent = 'Syncing…';
+      toast('Pulling the latest from TeamSnap…');
+      google.script.run
+        .withSuccessHandler(function () {
+          b.disabled = false;
+          b.textContent = 'Sync calendar';
+          toast('Calendar is up to date');
+          CP = null;
+          loadSchedule();
+        })
+        .withFailureHandler(function (err) {
+          b.disabled = false;
+          b.textContent = 'Sync calendar';
+          toast(err.message || 'Sync failed', true);
+        })
+        .runFullSync();
+      return;
+    }
+  });
+
+  loadSchedule();
+</script>
+</body>
+</html>
